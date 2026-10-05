@@ -1,5 +1,6 @@
 import streamlit as st
 from gtts import gTTS
+import pyttsx3
 import os
 
 # Page Configuration
@@ -11,11 +12,17 @@ st.write("မြန်မာစာသားများကို ထည့်သ
 # Text Input Area
 text_input = st.text_area("ဖတ်စေချင်တဲ့ စာကို ဒီမှာ ထည့်ပါ -", height=150)
 
-# Voice Selection
-voice_option = st.selectbox("ပိုင်နာမည် (အသံပုံစံ ရွေးချယ်ရန်)", ["သီလာ (အမျိုးသမီး)", "သီဟ (အမျိုးသား)"])
+# TTS Engine Selection (TTS မော်ဒယ် ရွေးချယ်ရန်)
+engine_option = st.selectbox(
+    "TTS မော်ဒယ် / အင်ဂျင် ရွေးချယ်ရန်", 
+    ["gTTS (Google - ပုံမှန်/နှေး ချိန်ညှိရန်)", "Offline System Engine (pyttsx3)"]
+)
 
-# Speed Selection (အသံအမြန်နှုန်း ချိန်ညှိရန်)
-speed_option = st.radio("အသံအမြန်နှုန်း ရွေးချယ်ရန်:", ["ပုံမှန် (Normal)", "နှေး (Slow - ပိုမိုရှင်းလင်းရန်)"])
+# Conditional Settings based on Engine
+if engine_option == "gTTS (Google - ပုံမှန်/နှေး ချိန်ညှိရန်)":
+    speed_option = st.radio("အသံအမြန်နှုန်း ရွေးချယ်ရန်:", ["ပုံမှန် (Normal)", "နှေး (Slow - ပိုမိုရှင်းလင်းရန်)"])
+else:
+    voice_gender = st.selectbox("အသံပုံစံ ရွေးချယ်ရန်:", ["အမျိုးသမီးသံ", "အမျိုးသားသံ"])
 
 # Generate Button
 if st.button("Generate"):
@@ -24,18 +31,35 @@ if st.button("Generate"):
     else:
         with st.spinner("အသံဖိုင် ထုတ်လုပ်နေပါပြီ ခဏစောင့်ပါ..."):
             try:
-                # Speed ကို အခြေခံ၍ slow parameter ကို True သို့မဟုတ် False သတ်မှတ်ခြင်း
-                is_slow = True if speed_option == "နှေး (Slow - ပိုမိုရှင်းလင်းရန်)" else False
-                
-                # gTTS ကို အသုံးပြု၍ မြန်မာစာကို အသံဖိုင်သို့ ပြောင်းခြင်း
-                tts = gTTS(text=text_input, lang='my', slow=is_slow)
                 audio_file = "output.mp3"
-                tts.save(audio_file)
+                
+                if "gTTS" in engine_option:
+                    # gTTS Processing
+                    is_slow = True if speed_option == "နှေး (Slow - ပိုမိုရှင်းလင်းရန်)" else False
+                    tts = gTTS(text=text_input, lang='my', slow=is_slow)
+                    tts.save(audio_file)
+                    
+                else:
+                    # pyttsx3 Processing (Offline)
+                    engine = pyttsx3.init()
+                    voices = engine.getProperty('voices')
+                    
+                    # Set voice type if available
+                    if voices:
+                        if "အမျိုးသမီး" in voice_gender and len(voices) > 1:
+                            engine.setProperty('voice', voices[1].id)
+                        else:
+                            engine.setProperty('voice', voices[0].id)
+                            
+                    # Save to file (pyttsx3 typically saves as wav, converted or saved directly)
+                    audio_file = "output.wav"
+                    engine.save_to_file(text_input, audio_file)
+                    engine.runAndWait()
                 
                 st.success("အသံဖိုင် အောင်မြင်စွာ ထွက်လာပါပြီ!")
                 
                 # Streamlit Audio Player
-                st.audio(audio_file, format='audio/mp3')
+                st.audio(audio_file)
                 
             except Exception as e:
                 st.error(f"မှားယွင်းမှု တစ်စုံတစ်ရာ ရှိနေပါသည်: {e}")
