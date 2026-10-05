@@ -37,7 +37,7 @@ if st.button("Generate"):
                 audio_file = "output.mp3"
                 
                 if "gTTS" in engine_option:
-                    # gTTS Processing (Reliable Audio Generation)
+                    # gTTS Processing
                     is_slow = True if speed_option == "နှေး (Slow - ပိုမိုရှင်းလင်းရန်)" else False
                     tts = gTTS(text=text_input, lang='my', slow=is_slow)
                     tts.save(audio_file)
@@ -46,15 +46,15 @@ if st.button("Generate"):
                     st.audio(audio_file, format='audio/mp3')
                     
                 else:
-                    # Google AI Studio Gemini Processing
+                    # Google AI Studio Gemini Processing (Updated to gemini-3.8-flash)
                     if not api_key_input.strip():
                         st.error("ကျေးဇူးပြု၍ Google AI Studio API Key ထည့်သွင်းပေးပါ။")
                     else:
                         client = genai.Client(api_key=api_key_input)
                         
-                        # Generate text response or analysis from Gemini
+                        # Generate response using gemini-3.8-flash model
                         response = client.models.generate_content(
-                            model='gemini-2.5-flash',
+                            model='gemini-3.8-flash',
                             contents=f"Please process this Burmese text: {text_input}"
                         )
                         
@@ -62,7 +62,7 @@ if st.button("Generate"):
                             st.success("Gemini AI မှ အောင်မြင်စွာ တုံ့ပြန်လာပါပြီ:")
                             st.write(response.text)
                             
-                            # Automatically generate audio for the text using gTTS for seamless playback
+                            # Automatically generate audio for playback
                             tts = gTTS(text=text_input, lang='my', slow=False)
                             tts.save(audio_file)
                             st.audio(audio_file, format='audio/mp3')
