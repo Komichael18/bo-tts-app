@@ -5,7 +5,7 @@ import datetime
 from google import genai
 
 # Page Configuration
-st.set_page_config(page_title="SaiMyanmar TTS Pro", page_icon="🔊", layout="centered")
+st.set_page_config(page_title="Bo TTS Pro", page_icon="🔊", layout="centered")
 
 # Custom Styling (Dark/Pro Theme matching the video)
 st.markdown("""
@@ -50,7 +50,7 @@ st.markdown("""
     <div style="text-align: center; margin-bottom: 15px;">
         <a href="https://t.me/" target="_blank" style="text-decoration: none;">
             <button style="background-color: #229ED9; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">
-                📢 နိုင်ငံိုင် Telegram Channel မှ ဝင်ရောက်ရန်
+                📢 Telegram Channel မှ ဝင်ရောက်ရန်
             </button>
         </a>
     </div>
@@ -123,7 +123,7 @@ m_col2.metric("WORDS", words_count)
 m_col3.metric("CHARACTERS", char_count)
 
 # Custom File Name Input for Download
-custom_filename = st.text_input("အသံဖိုင် အမည်ပေးရန် (ဥပမာ - Saimyanmar31)", value="SaiMyanmar_TTS")
+custom_filename = st.text_input("အသံဖိုင် အမည်ပေးရန် (ဥပမာ - Bo TTS Pro)", value="SaiMyanmar_TTS")
 
 # Generate Button
 if st.button("✨ အသံထွက်ယူမည်"):
